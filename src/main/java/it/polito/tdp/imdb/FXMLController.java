@@ -35,7 +35,7 @@ public class FXMLController {
     private Button btnSimulazione; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGenere"
-    private ComboBox<?> boxGenere; // Value injected by FXMLLoader
+    private ComboBox<String> boxGenere; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxAttore"
     private ComboBox<?> boxAttore; // Value injected by FXMLLoader
@@ -48,12 +48,22 @@ public class FXMLController {
 
     @FXML
     void doAttoriSimili(ActionEvent event) {
+    	
+    	
 
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	txtResult.clear();
+    	String genre= this.boxGenere.getValue(); 
+    	if(genre== null) {
+    		txtResult.appendText("selezionare un genere");
+    		return; 
+    	}
+    	this.model.creaGrafo(genre);
+    	txtResult.appendText("grafo creato ! "+ "\n");
+    	txtResult.appendText("# vertici  "+ this.model.numeroVerici()+ "\n");
     }
 
     @FXML
@@ -75,5 +85,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.boxGenere.getItems().addAll(this.model.getGenres());
     }
 }
