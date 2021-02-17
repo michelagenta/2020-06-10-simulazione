@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.tdp.imdb.model.Actor;
+import it.polito.tdp.imdb.model.Adiacenza;
 import it.polito.tdp.imdb.model.Director;
 import it.polito.tdp.imdb.model.Movie;
 
@@ -87,7 +88,7 @@ public class ImdbDAO {
 	}
 	
 	public List<String> getGenres(){
-		String sql= "SELECT genre "
+		String sql= "SELECT distinct genre "
 				+ "FROM movies_genres "; 
 		List<String> result = new ArrayList<String>();
 		Connection conn = DBConnect.getConnection();
@@ -109,7 +110,7 @@ public class ImdbDAO {
 	}
 	
 	public void getVertici(Map<Integer, Actor> idMap,String genre) {
-		String sql= "SELECT a.id as id  , a.last_name,  a.first_name, a.gender  "
+		String sql= "SELECT distinct a.id as id  , a.last_name,  a.first_name, a.gender  "
 				+ "FROM movies_genres AS mg, roles AS r, actors AS a "
 				+ "WHERE genre =? "
 				+ "AND r.actor_id= a.id "
@@ -134,6 +135,37 @@ public class ImdbDAO {
 			e.printStackTrace();
 
 		}	
+	}
+	
+	public List<Adiacenza> getAdiacenze(Map<Integer, Actor> idMap, String genre){
+		String sql= "SELECT r1.actor_id AS a1, r2.actor_id AS a2, count(distinct r1.movie_id) AS peso "
+				+ "FROM roles r1, roles r2, movies_genres mg "
+				+ "WHERE  r1.actor_id != r2.actor_id "
+				+ "AND genre=? "
+				+ "AND r1.movie_id= mg.movie_id "
+				+ "AND r1.movie_id= r2.movie_id "
+				+ "GROUP BY r1.actor_id, r2.actor_id ";
+		List<Adiacenza> result = new ArrayList<Adiacenza>();
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, genre);
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				if(idMap.containsKey(res.getInt("a1")) && idMap.containsKey(res.getInt("a2"))) {
+				Adiacenza a= new Adiacenza(idMap.get(res.getInt("a1")), idMap.get(res.getInt("a2")), res.getInt("peso")); 
+				result.add(a);
+				}
+			}
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 		
 		
