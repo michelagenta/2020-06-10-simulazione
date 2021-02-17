@@ -49,8 +49,17 @@ public class FXMLController {
 
     @FXML
     void doAttoriSimili(ActionEvent event) {
+    	Actor a = this.boxAttore.getValue(); 
+    	if (a== null) {
+    		txtResult.appendText("selezionare un attore");
+    		return; 
+    	}
+    	this.model.getAttoriVicini(a);
+    	txtResult.appendText("attori vicini a "+ a.toString()+ "\n");
     	
-    	
+    	for(Actor a2 : this.model.getAttoriVicini(a)) {
+    		txtResult.appendText(a2.toString()+"\n");
+    	}
 
     }
 

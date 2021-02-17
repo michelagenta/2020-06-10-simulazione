@@ -1,5 +1,6 @@
 package it.polito.tdp.imdb.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,9 +40,12 @@ public class Model {
 	}
 	
 	public List<Actor> getAttoriVicini(Actor partenza){
-		List<Actor> connessi = new LinkedList<Actor>();
 		ConnectivityInspector <Actor, DefaultEdge> ci= new ConnectivityInspector<Actor, DefaultEdge>(grafo); 
-		ci.connectedSetOf(partenza); 
+		List<Actor> connessi = new LinkedList<Actor>(ci.connectedSetOf(partenza));
+	
+		//connessi.remove(partenza);
+		Collections.sort(connessi);
+	
 		return connessi;
 	}
 	
